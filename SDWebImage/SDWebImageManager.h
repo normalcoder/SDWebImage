@@ -72,6 +72,11 @@ typedef NSString *(^CacheKeyFilter)(NSURL *url);
 @property (strong) CacheKeyFilter cacheKeyFilter;
 #endif
 
+#if NS_BLOCKS_AVAILABLE
+typedef UIImage *(^ImageProcessor)(UIImage *image, NSURL *url);
+
+@property (strong) ImageProcessor imageProcessor;
+#endif
 
 /**
  * Returns global SDWebImageManager instance.

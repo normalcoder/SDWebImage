@@ -17,6 +17,7 @@ static SDWebImageManager *instance;
 
 #if NS_BLOCKS_AVAILABLE
 @synthesize cacheKeyFilter;
+@synthesize imageProcessor;
 #endif
 
 - (id)init
@@ -344,6 +345,20 @@ static SDWebImageManager *instance;
     SDWIRetain(downloader);
     SDWebImageOptions options = [[downloader.userInfo objectForKey:@"options"] intValue];
 
+    UIImage * processedImage = nil;
+    UIImage * resultImage = image;
+    NSData * resultImageData = downloader.imageData;
+#if NS_BLOCKS_AVAILABLE
+    if (self.imageProcessor)
+    {
+        processedImage = self.imageProcessor(image, downloader.url);
+        if (processedImage) {
+            resultImage = processedImage;
+            resultImageData = nil;
+        }
+    }
+#endif
+    
     // Notify all the downloadDelegates with this downloader
     for (NSInteger idx = (NSInteger)[downloaders count] - 1; idx >= 0; idx--)
     {
@@ -359,11 +374,11 @@ static SDWebImageManager *instance;
             {
                 if ([delegate respondsToSelector:@selector(webImageManager:didFinishWithImage:)])
                 {
-                    [delegate performSelector:@selector(webImageManager:didFinishWithImage:) withObject:self withObject:image];
+                    [delegate performSelector:@selector(webImageManager:didFinishWithImage:) withObject:self withObject:resultImage];
                 }
                 if ([delegate respondsToSelector:@selector(webImageManager:didFinishWithImage:forURL:)])
                 {
-                    objc_msgSend(delegate, @selector(webImageManager:didFinishWithImage:forURL:), self, image, downloader.url);
+                    objc_msgSend(delegate, @selector(webImageManager:didFinishWithImage:forURL:), self, resultImage, downloader.url);
                 }
                 if ([delegate respondsToSelector:@selector(webImageManager:didFinishWithImage:forURL:userInfo:)])
                 {
@@ -372,13 +387,13 @@ static SDWebImageManager *instance;
                     {
                         userInfo = nil;
                     }
-                    objc_msgSend(delegate, @selector(webImageManager:didFinishWithImage:forURL:userInfo:), self, image, downloader.url, userInfo);
+                    objc_msgSend(delegate, @selector(webImageManager:didFinishWithImage:forURL:userInfo:), self, resultImage, downloader.url, userInfo);
                 }
 #if NS_BLOCKS_AVAILABLE
                 if ([[downloadInfo objectAtIndex:uidx] objectForKey:@"success"])
                 {
                     SDWebImageSuccessBlock success = [[downloadInfo objectAtIndex:uidx] objectForKey:@"success"];
-                    success(image, NO);
+                    success(resultImage, NO);
                 }
 #endif
             }
@@ -416,11 +431,11 @@ static SDWebImageManager *instance;
         }
     }
 
-    if (image)
+    if (resultImage)
     {
         // Store the image in the cache
-        [[SDImageCache sharedImageCache] storeImage:image
-                                          imageData:downloader.imageData
+        [[SDImageCache sharedImageCache] storeImage:resultImage
+                                          imageData:resultImageData
                                              forKey:[self cacheKeyForURL:downloader.url]
                                              toDisk:!(options & SDWebImageCacheMemoryOnly)];
     }
