@@ -27,7 +27,9 @@
     // Remove in progress downloader from queue
     [manager cancelForDelegate:self];
 
-    self.image = placeholder;
+    if (placeholder) {
+        self.image = placeholder;
+    }
 
     if (url)
     {
@@ -52,8 +54,10 @@
 
     // Remove in progress downloader from queue
     [manager cancelForDelegate:self];
-
-    self.image = placeholder;
+    
+    if (placeholder) {
+        self.image = placeholder;
+    }
 
     if (url)
     {
