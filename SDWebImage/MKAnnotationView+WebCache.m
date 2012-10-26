@@ -23,14 +23,17 @@
 - (void)setImageWithURL:(NSURL *)url placeholderImage:(UIImage *)placeholder options:(SDWebImageOptions)options
 {
     SDWebImageManager *manager = [SDWebImageManager sharedManager];
-    
+
     // Remove in progress downloader from queue
     [manager cancelForDelegate:self];
-    
-    if (placeholder) {
+
+    UIImage * image = [manager storedImageWithURL:url];
+    if (image) {
+        self.image = image;
+    } else {
         self.image = placeholder;
     }
-    
+
     if (url)
     {
         [manager downloadWithURL:url delegate:self options:options];
@@ -51,14 +54,17 @@
 - (void)setImageWithURL:(NSURL *)url placeholderImage:(UIImage *)placeholder options:(SDWebImageOptions)options success:(SDWebImageSuccessBlock)success failure:(SDWebImageFailureBlock)failure;
 {
     SDWebImageManager *manager = [SDWebImageManager sharedManager];
-    
+
     // Remove in progress downloader from queue
     [manager cancelForDelegate:self];
-    
-    if (placeholder) {
+
+    UIImage * image = [manager storedImageWithURL:url];
+    if (image) {
+        self.image = image;
+    } else {
         self.image = placeholder;
     }
-    
+
     if (url)
     {
         [manager downloadWithURL:url delegate:self options:options success:success failure:failure];

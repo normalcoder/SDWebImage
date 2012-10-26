@@ -87,6 +87,8 @@ typedef UIImage *(^ImageProcessor)(UIImage *image, NSURL *url);
 
 - (UIImage *)imageWithURL:(NSURL *)url __attribute__ ((deprecated));
 
+- (UIImage *)storedImageWithURL:(NSURL *)url;
+
 /**
  * Downloads the image at the given URL if not present in cache or return the cached version otherwise.
  *

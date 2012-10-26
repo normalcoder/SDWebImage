@@ -27,7 +27,10 @@
     // Remove in progress downloader from queue
     [manager cancelForDelegate:self];
 
-    if (placeholder) {
+    UIImage * image = [manager storedImageWithURL:url];
+    if (image) {
+        self.image = image;
+    } else {
         self.image = placeholder;
     }
 
@@ -54,8 +57,11 @@
 
     // Remove in progress downloader from queue
     [manager cancelForDelegate:self];
-    
-    if (placeholder) {
+
+    UIImage * image = [manager storedImageWithURL:url];
+    if (image) {
+        self.image = image;
+    } else {
         self.image = placeholder;
     }
 

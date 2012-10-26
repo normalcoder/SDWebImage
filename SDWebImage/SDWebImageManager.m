@@ -82,6 +82,11 @@ static SDWebImageManager *instance;
     return [[SDImageCache sharedImageCache] imageFromKey:[self cacheKeyForURL:url]];
 }
 
+- (UIImage *)storedImageWithURL:(NSURL *)url
+{
+    return [[SDImageCache sharedImageCache] imageFromKey:[self cacheKeyForURL:url]];
+}
+
 /*
  * @deprecated
  */
