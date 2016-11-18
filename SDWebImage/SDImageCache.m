@@ -530,6 +530,10 @@ FOUNDATION_STATIC_INLINE NSUInteger SDCacheCostForImage(UIImage *image) {
         for (NSURL *fileURL in fileEnumerator) {
             NSDictionary *resourceValues = [fileURL resourceValuesForKeys:resourceKeys error:NULL];
 
+            if (!resourceValues) {
+                continue;
+            }
+
             // Skip directories.
             if ([resourceValues[NSURLIsDirectoryKey] boolValue]) {
                 continue;
